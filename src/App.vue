@@ -1,28 +1,29 @@
 <template>
   <div id="app">
-    <img alt="Vue logo" src="./assets/logo.png">
-    <HelloWorld msg="Welcome to Your Vue.js App"/>
+    <Header></Header>
+    <router-view></router-view>
+    <!-- home 或者search 下 显示  登录或者注册是隐藏 -->
+    <Footer v-show="$route.meta.show"></Footer>
   </div>
 </template>
 
 <script>
-import HelloWorld from './components/HelloWorld.vue'
-
-export default {
-  name: 'App',
-  components: {
-    HelloWorld
+  import Header from './components/Header'
+  import Footer from './components/Footer';
+  import router from '@/router'
+  export default {
+    name: 'App',
+    components: {
+      Header,
+      Footer
+    },mounted() {
+      //这种用到一次就不需要再使用的数据 在appvue里面派发一次就不再派发
+      this.$store.dispatch('categoryList');
+    },
+    router
   }
-}
 </script>
 
 <style>
-#app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-  margin-top: 60px;
-}
+
 </style>
