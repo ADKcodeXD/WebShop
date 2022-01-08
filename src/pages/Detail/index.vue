@@ -16,9 +16,9 @@
         <!-- 左侧放大镜区域 -->
         <div class="previewWrap">
           <!--放大镜效果-->
-          <Zoom />
+          <Zoom :imgList="imgList" />
           <!-- 小图列表 -->
-          <ImageList />
+          <ImageList :imgList="imgList" />
         </div>
         <!-- 右侧选择区域布局 -->
         <div class="InfoWrap">
@@ -63,39 +63,23 @@
           <div class="choose">
             <div class="chooseArea">
               <div class="choosed"></div>
-              <dl>
-                <dt class="title">选择颜色</dt>
-                <dd changepirce="0" class="active">金色</dd>
-                <dd changepirce="40">银色</dd>
-                <dd changepirce="90">黑色</dd>
-              </dl>
-              <dl>
-                <dt class="title">内存容量</dt>
-                <dd changepirce="0" class="active">16G</dd>
-                <dd changepirce="300">64G</dd>
-                <dd changepirce="900">128G</dd>
-                <dd changepirce="1300">256G</dd>
-              </dl>
-              <dl>
-                <dt class="title">选择版本</dt>
-                <dd changepirce="0" class="active">公开版</dd>
-                <dd changepirce="-1000">移动版</dd>
-              </dl>
-              <dl>
-                <dt class="title">购买方式</dt>
-                <dd changepirce="0" class="active">官方标配</dd>
-                <dd changepirce="-240">优惠移动版</dd>
-                <dd changepirce="-390">电信优惠版</dd>
+              <dl v-for="(attr) in skuInfo.skuSaleAttrValueList" :key="attr.id">
+                <dt class="title">{{attr.saleAttrName}}</dt>
+                <dd changepirce="0" class="active" v-if="!attr.spuSaleAttrValueList">
+                  {{attr.saleAttrValueName}}</dd>
+                <dd changepirce="0" :class="{'active':value.isChecked==1}" v-for="(value) in attr.spuSaleAttrValueList"
+                  :key="value.id" @click="changeActive">
+                  {{value.saleAttrValueName}}</dd>
               </dl>
             </div>
             <div class="cartWrap">
               <div class="controls">
-                <input autocomplete="off" class="itxt">
-                <a href="javascript:" class="plus">+</a>
-                <a href="javascript:" class="mins">-</a>
+                <input autocomplete="off" class="itxt" v-model="skuNum" @change="changeSkuNum">
+                <a href="javascript:" class="plus" @click="skuNum>=99?skuNum=99:skuNum++">+</a>
+                <a href="javascript:" class="mins" @click="skuNum>1?skuNum--:skuNum=1">-</a>
               </div>
               <div class="add">
-                <a href="javascript:">加入购物车</a>
+                <a @click.prevent="addToCart" href="javascript:">加入购物车</a>
               </div>
             </div>
           </div>
@@ -348,26 +332,72 @@
 <script>
   import ImageList from './ImageList/ImageList'
   import Zoom from './Zoom/Zoom'
-  import {mapState,mapGetters} from 'vuex';
+  import {
+    mapState,
+    mapGetters
+  } from 'vuex';
 
   export default {
     name: 'Detail',
     data() {
       return {
-        
+        skuNum: 1
       }
     },
     components: {
-      ImageList,
-      Zoom
+      Zoom,
+      ImageList
     },
     mounted() {
-      this.$store.dispatch('getGoodsInfo',this.$route.params.skuid)
+      this.$store.dispatch('getGoodsInfo', this.$route.params.skuid)
     },
-    computed:{
-      
-      ...mapGetters(['categoryView','skuInfo'])
-    }
+    computed: {
+      ...mapGetters(['categoryView', 'skuInfo', 'attrList']),
+      imgList() {
+        return this.skuInfo.skuImageList || []
+      }
+    },
+    methods: {
+      changeActive() {
+
+      },
+      changeSkuNum(event) {
+        let input = event.target.value
+        let result = parseInt(input);
+        if (result < 1) {
+          event.target.value = 1;
+          this.skuNum = 1
+        } else if (isNaN(result)) {
+          event.target.value = 1;
+          this.skuNum = 1
+        } else if (result > 99) {
+          event.target.value = 99;
+          this.skuNum = 99
+        } else {
+          event.target.value = result;
+          this.skuNum = result
+        }
+
+      },
+      async addToCart() {
+        try {
+          console.log(this.$route.params.skuid, this.skuNum);
+          await this.$store.dispatch('addToShopCart', {
+            skuid: this.$route.params.skuid,
+            skunum: this.skuNum
+          })
+          sessionStorage.setItem("skuInfo", JSON.stringify(this.skuInfo))
+          this.$router.push({
+            name: 'addcartsucces',
+            query: {
+              skuNum: this.skuNum
+            }
+          })
+        } catch (error) {
+          alert(error.message)
+        }
+      }
+    },
   }
 </script>
 
