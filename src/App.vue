@@ -19,8 +19,9 @@
     },mounted() {
       //这种用到一次就不需要再使用的数据 在appvue里面派发一次就不再派发
       this.$store.dispatch('categoryList');
+      this.$store.dispatch("getUserInfo");
     },
-    router
+    router,
   }
 </script>
 

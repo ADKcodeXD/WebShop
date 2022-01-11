@@ -4,7 +4,9 @@ import Vuex from 'vuex';
 import home from './home'
 import search from './search';
 import detail from './detail';
-import shopcar from './shopcar'
+import shopcar from './shopcar';
+import user from './User';
+import address from './address'
 Vue.use(Vuex)
 
 const actions={
@@ -34,6 +36,8 @@ export default new Vuex.Store({
         home,
         search,
         detail,
-        shopcar
+        shopcar,
+        user,
+        address
     }
 })

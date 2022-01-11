@@ -59,7 +59,7 @@
           <i class="summoney">{{totalPrice}}</i>
         </div>
         <div class="sumbtn">
-          <a class="sum-btn" target="_blank">结算</a>
+          <a class="sum-btn" href="javascript:;"  @click="pay">结算</a>
         </div>
       </div>
     </div>
@@ -81,6 +81,9 @@
     methods: {
       getData() {
         this.$store.dispatch('getCartList')
+      },
+      pay(){
+        this.$router.push('/trade');
       },
       async deleteCartListById(item) {
         try {

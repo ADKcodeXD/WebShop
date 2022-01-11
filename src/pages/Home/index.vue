@@ -30,7 +30,8 @@
         },
         mounted() {
             this.$store.dispatch('getFloorList');
-            
+            // 获取用户信息 并展示信息的函数
+            this.$store.dispatch('getUserInfo');
         },
         computed:{
             ...mapState({floorList:state=>state.home.floorList})
